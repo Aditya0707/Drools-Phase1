@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/7.3.0/kmodule">
+  <kbase name="KBase" default="true" packages="TestClaim">
+    <ksession name="KSession" type="stateless" default="true" />
+  </kbase>
+</kmodule>

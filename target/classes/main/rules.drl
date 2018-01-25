@@ -1,0 +1,256 @@
+//created on: Jan 10, 2018
+package TestClaim;
+
+//list any import classes here.
+import java.util.*;
+
+//declare any global variables here
+
+rule "checking primacy"
+
+    when
+        //conditions
+        $aa : (ClaimInfo(primacy == 01))
+    then
+        //actions
+		System.out.println("ClaimID: " + $aa.getClm_id() + " has Primacy : " + $aa.getPrimacy());
+end
+
+rule "procedures" extends "checking primacy"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+        $ab: ClaimInfo(proc_medicare_covered == 01)
+    then
+        //actions
+      	System.out.println("ClaimID: " + $ab.getClm_id() +" has Medicare Coverage : " +$ab.getProc_medicare_covered());
+
+end
+
+rule "provider within country" extends "procedures"
+	when 
+		$ac: ClaimInfo(pvd_Zipcode != '99999')
+	then
+		System.out.println("ClaimID: " + $ac.getClm_id() +" has provider Zipcode : " +$ac.getPvd_Zipcode());
+end
+
+rule "claim_line_item" extends "provider within country"
+	when 
+		$ad: ClaimInfo((line_date.after(Previous_Date)) && (line_date.before(current_date)))
+	then
+		System.out.println("ClaimID: " + $ad.getClm_id() +" has line date : " +$ad.getLine_date());
+end
+
+rule "claim_line_item_part_type_A" extends "claim_line_item"
+	when 
+		$ae: ClaimInfo(part_type.equals('Part A'))
+	then
+		System.out.println("ClaimID: " + $ae.getClm_id() +" has Part type : " +$ae.getPart_type());
+		
+end
+rule "claim_line_item_part_type_B" extends "claim_line_item"
+	when 
+		$af: ClaimInfo(part_type.equals('Part B'))
+	then
+		System.out.println("ClaimID: " + $af.getClm_id() +" has Part type : " +$af.getPart_type());
+end
+rule "claim_line_item_part_type_D" extends "claim_line_item"
+	when 
+		$ag: ClaimInfo(part_type.equals('Part D'))
+	then
+		System.out.println("ClaimID: " + $ag.getClm_id() +" has Part type : " +$ag.getPart_type());
+		
+end
+
+rule "event_name_phase1_a" extends "claim_line_item_part_type_A"
+	when 
+	$ah: ClaimInfo(event_names contains "Medicare Part A")
+	then
+		
+		System.out.println("ClaimID: " +$ah.getClm_id()+"Contains Medicare Part A");
+end
+
+
+rule "event_name_phase1_b" extends "claim_line_item_part_type_B"
+	when 
+		$ai: ClaimInfo(event_names contains 'Medicare Part B')
+	then
+	
+		System.out.println("ClaimID: " +$ai.getClm_id()+"Contains Medicare Part B");
+end
+rule "event_name_phase1_d" extends "claim_line_item_part_type_D"
+	when 
+		$aj: ClaimInfo(event_names contains 'Medicare Part D')
+	then
+		
+		System.out.println("ClaimID: " +$aj.getClm_id()+"Contains Medicare Part D");
+end
+
+rule "event_dates_A" extends "event_name_phase1_a"
+	when 
+		$ak: ClaimInfo() 
+		Boolean(booleanValue == true)from ($ak.completeEventInfo($ak.getEventinfo(),"Medicare Part A",$ak.getLine_date()) == true)
+	then
+		
+		System.out.println("ClaimID: " +$ak.getClm_id()+" has line date within medicare event dates  ");
+		
+end
+
+rule "event_dates_B" extends "event_name_phase1_b"
+	when 
+		$al: ClaimInfo() 
+		Boolean(booleanValue == true)from ($al.completeEventInfo($al.getEventinfo(),"Medicare Part B",$al.getLine_date()) == true)
+	then
+		
+		System.out.println("ClaimID: " +$al.getClm_id()+" has line date within medicare event dates ");
+end
+rule "event_dates_D" extends "event_name_phase1_d"
+	when 
+		$am: ClaimInfo() //  
+		Boolean(booleanValue == true)from ($am.completeEventInfo($am.getEventinfo(),"Medicare Part D",$am.getLine_date()) == true) 
+	then
+		
+		System.out.println("ClaimID: " +$am.getClm_id()+"  has line date within medicare event dates ");
+end
+
+rule "SPECIAL_PARTB_CASE" extends "event_dates_B"
+	when 
+		$an: ClaimInfo(!(event_names contains 'Medicare Part A'))
+	then
+		$an.setRecoverable(true);
+		System.out.println("ClaimID: " + $an.getClm_id()+" this claim could be recoverable under special PartB case");
+end
+
+rule "MEMBERSHIP_TYPE_i_A" extends "event_dates_A"
+	when 
+		$am: ClaimInfo(mbs_type.equals("Individual"))
+	then
+		$am.setRecoverable(true);
+		System.out.println("Membership Type : " +$am.getMbs_type());
+		System.out.println("ClaimID: " + $am.getClm_id()+" this claim could be RECOVERABLE beacuse of Membership type being Individual");
+end
+rule "MEMBERSHIP_TYPE_i_B" extends "event_dates_B"
+	when 
+		$an: ClaimInfo((mbs_type.equals("Individual"))&&(event_names contains 'Medicare Part A'))
+	then
+		$an.setRecoverable(true);
+		System.out.println("Membership Type : " +$an.getMbs_type());
+		System.out.println("ClaimID: " + $an.getClm_id()+" this claim could be RECOVERABLE beacuse of Membership type being Individual");
+end
+rule "MEMBERSHIP_TYPE_i_D" extends "event_dates_D"
+	when 
+		$ao: ClaimInfo(mbs_type.equals("Individual"))
+	then
+		$ao.setRecoverable(true);
+		System.out.println("Membership Type : " +$ao.getMbs_type());
+		System.out.println("ClaimID: " + $ao.getClm_id()+" this claim could be RECOVERABLE beacuse of Membership type being Individual");
+end
+
+rule "MEMBERSHIP_TYPE_g_A" extends "event_dates_A"
+	when 
+		$ap: ClaimInfo(mbs_type.equals('Group'))
+	then
+		System.out.println("ClaimID: " + $ap.getClm_id()+" has Membership Type : " +$ap.getMbs_type());
+		
+end
+rule "MEMBERSHIP_TYPE_g_B" extends "event_dates_B"
+	when 
+		$aq: ClaimInfo((mbs_type.equals('Group'))&& (event_names contains 'Medicare Part A'))
+	then
+		System.out.println("ClaimID: " + $aq.getClm_id()+"has Membership Type : " +$aq.getMbs_type());
+end
+rule "MEMBERSHIP_TYPE_g_D" extends "event_dates_D"
+	when 
+		$ar: ClaimInfo(mbs_type.equals('Group'))
+	then
+		System.out.println("ClaimID: " + $ar.getClm_id()+"has Membership Type : " +$ar.getMbs_type());
+end
+
+
+rule "event_name_phase2_A" extends "MEMBERSHIP_TYPE_g_A"
+	when 
+		$as: ClaimInfo(
+						(event_names contains 'Stopped Working')&&
+						(	(event_names contains 'Aged') ||
+							(event_names contains 'Disabled')
+						)&&
+						(primary_member == true)
+					  )
+		
+		Boolean(booleanValue == true)from ($as.completeEventInfo($as.getEventinfo(),"Stopped Working",$as.getLine_date()) == true)
+	then
+		$as.setRecoverable(true);
+		System.out.println("ClaimID: " + $as.getClm_id()+" this claim could be recoverable since line date is within Stopped working event dates ");
+end
+
+rule "event_name_phase2_B" extends "MEMBERSHIP_TYPE_g_B"
+	when 
+		$at: ClaimInfo(
+						(event_names contains 'Stopped Working')&&
+						(	(event_names contains 'Aged') || 
+							(event_names contains 'Disabled')
+						)&&
+						(primary_member == true)
+					  )
+		Boolean(booleanValue == true)from ($at.completeEventInfo($at.getEventinfo(),"Stopped Working",$at.getLine_date()) == true)
+	then
+		$at.setRecoverable(true);
+		System.out.println("ClaimID: " + $at.getClm_id()+" this claim could be recoverable since line date is within Stopped working event dates");
+end
+
+rule "event_name_phase2_D" extends "MEMBERSHIP_TYPE_g_D"
+	when 
+		$au: ClaimInfo(
+						(event_names contains 'Stopped Working')&&
+						(	(event_names contains 'Aged') || 
+							(event_names contains 'Disabled')
+						)&&
+						(primary_member == true)
+						  )
+		Boolean(booleanValue == true)from ($au.completeEventInfo($au.getEventinfo(),"Stopped Working",$au.getLine_date()) == true)
+	then
+		$au.setRecoverable(true);
+		System.out.println("ClaimID: " + $au.getClm_id()+" this claim could be recoverable since line date is within Stopped working event dates");
+end
+
+rule "event_name_phase3_A" extends "MEMBERSHIP_TYPE_g_A"
+	when 
+		$av: ClaimInfo(
+						(event_names contains 'Employeed')&&
+						(	(event_names contains 'Aged') || 
+							(event_names contains 'Disabled')
+						)&&
+						((emp_size == 0) || (emp_size == 1))
+					  )
+		
+	then
+		$av.setRecoverable(true);
+		System.out.println("ClaimID: " + $av.getClm_id()+" this claim could be recoverable since employer size is acceptable");
+end
+rule "event_name_phase3_B" extends "MEMBERSHIP_TYPE_g_B"
+	when 
+		$aw: ClaimInfo(
+						(event_names contains 'Employeed')&&
+						(	(event_names contains 'Aged') || 
+							(event_names contains 'Disabled')
+						)&&
+						((emp_size == 0) || (emp_size == 1))
+					  )
+	then
+		$aw.setRecoverable(true);
+		System.out.println("ClaimID: " + $aw.getClm_id()+" this claim could be recoverable since employer size is acceptable");
+end
+rule "event_name_phase3_D" extends "MEMBERSHIP_TYPE_g_D"
+	when 
+		$ax: ClaimInfo(
+						(event_names contains 'Employeed')&&
+						(	(event_names contains 'Aged') || 
+							(event_names contains 'Disabled')
+						)&&
+						((emp_size == 0) || (emp_size == 1))
+					  )
+	then
+		$ax.setRecoverable(true);
+		System.out.println("ClaimID: " + $ax.getClm_id()+" this claim could be recoverable since employer size is acceptable");
+end
+

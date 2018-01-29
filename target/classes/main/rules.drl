@@ -67,7 +67,7 @@ rule "event_name_phase1_a" extends "claim_line_item_part_type_A"
 	$ah: ClaimInfo(event_names contains "Medicare Part A")
 	then
 		
-		System.out.println("ClaimID: " +$ah.getClm_id()+"Contains Medicare Part A");
+		System.out.println("ClaimID: " +$ah.getClm_id()+" Contains Medicare Part A");
 end
 
 
@@ -76,14 +76,14 @@ rule "event_name_phase1_b" extends "claim_line_item_part_type_B"
 		$ai: ClaimInfo(event_names contains 'Medicare Part B')
 	then
 	
-		System.out.println("ClaimID: " +$ai.getClm_id()+"Contains Medicare Part B");
+		System.out.println("ClaimID: " +$ai.getClm_id()+" Contains Medicare Part B");
 end
 rule "event_name_phase1_d" extends "claim_line_item_part_type_D"
 	when 
 		$aj: ClaimInfo(event_names contains 'Medicare Part D')
 	then
 		
-		System.out.println("ClaimID: " +$aj.getClm_id()+"Contains Medicare Part D");
+		System.out.println("ClaimID: " +$aj.getClm_id()+" Contains Medicare Part D");
 end
 
 rule "event_dates_A" extends "event_name_phase1_a"
@@ -157,13 +157,13 @@ rule "MEMBERSHIP_TYPE_g_B" extends "event_dates_B"
 	when 
 		$aq: ClaimInfo((mbs_type.equals('Group'))&& (event_names contains 'Medicare Part A'))
 	then
-		System.out.println("ClaimID: " + $aq.getClm_id()+"has Membership Type : " +$aq.getMbs_type());
+		System.out.println("ClaimID: " + $aq.getClm_id()+" has Membership Type : " +$aq.getMbs_type());
 end
 rule "MEMBERSHIP_TYPE_g_D" extends "event_dates_D"
 	when 
 		$ar: ClaimInfo(mbs_type.equals('Group'))
 	then
-		System.out.println("ClaimID: " + $ar.getClm_id()+"has Membership Type : " +$ar.getMbs_type());
+		System.out.println("ClaimID: " + $ar.getClm_id()+" has Membership Type : " +$ar.getMbs_type());
 end
 
 

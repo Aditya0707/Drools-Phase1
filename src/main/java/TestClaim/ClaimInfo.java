@@ -47,7 +47,7 @@ public class ClaimInfo implements Serializable {
 		}
 			 
 		eventinfo = new ArrayList<EventInfo>();
-	
+				
 		for (int j = 0; j < event_names.length; j++) {
 				eventinfo.add(new EventInfo(event_names[j], event_dates[2 * j], event_dates[(2 * j) + 1]));
 				

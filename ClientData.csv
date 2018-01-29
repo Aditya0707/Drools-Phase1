@@ -1,0 +1,5 @@
+Claim_Id:Line_Number:Primacy:Medicare_Covered_Proedure:Provider_ZipCode:Part_Type:Event_Names:Membership_Type:Employer_Size:Line_Date:Event_Dates:Primary_Member
+12345:34568:1:1:58103:Part A:Medicare Part A,Medicare Part B,Medicare Part D:Individual:0:3/5/2017:10/4/2017,12/7/2017,15/03/2017,16/06/2017,22/04/2017,30/11/2017:TRUE,,,
+145615:35468:1:1:48331:Part B:Medicare Part A,Medicare Part B,Stopped Working,Aged:Group:0:3/6/2017:10/1/2017,19/01/2018,10/4/2017,12/7/2017,15/03/2017,16/06/2017,15/05/2016,25/01/2018:TRUE
+146616:34566:1:1:44602:Part A:Medicare Part B,Medicare Part D,Employeed:Group:0:13/05/2017:10/1/2017,19/01/2018,10/4/2017,12/7/2017,15/03/2017,16/06/2017:TRUE,,,
+145607:34565:1:1:55163:Part B:Medicare Part B,Aged,Employeed:Group:0:23/06/2017:10/1/2017,19/01/2018,10/4/2017,25/01/2018,15/03/2017,16/06/2017:TRUE,,,
